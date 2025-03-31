@@ -6,7 +6,7 @@ Below is an example of how you might document this issue:
 Publicly Accessible PDF Containing Sensitive Training Material
 
 **Description:**  
-A PDF file containing Persona training material is accessible without any form of authentication. This exposes sensitive internal content to anyone who knows or discovers the URL, leading to potential unauthorized access and information disclosure.
+An endpoint hosting a PDF file containing persona training material is publicly accessible without any authentication. This exposes potentially sensitive or confidential information to anyone who has or discovers the URL, leading to an information disclosure vulnerability. Lack of access controls violates the principle of least privilege and could result in unauthorized individuals accessing proprietary or private data.
 
 **Steps to Reproduce:**  
 1. Open a web browser.  
