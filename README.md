@@ -1,23 +1,17 @@
-Below is an example of how you might document this issue:
+Unauthorized User Deprovisioning via Insecure API Endpoint
 
----
 
-**Title:**  
-Publicly Accessible PDF Containing Sensitive Training Material
+An API endpoint (/kioskmode/sessions/${n.kiosk_mode_session_id}/users/deprovision) was discovered in a JavaScript file, which allows an authenticated user to deprovision other users by substituting a valid kiosk_mode_session_id (GUID) obtained from another endpoint (/kioskmode/sessions). The JSON response from /kioskmode/sessions initially shows "is_deprovisioned_successfully": false, but after sending a deprovision request to the endpoint, it updates to "is_deprovisioned_successfully": true. This suggests that the endpoint lacks proper authorization checks, potentially allowing an authenticated user to deprovision users or sessions they should not have access to, leading to privilege escalation or unauthorized account manipulation.
 
-**Description:**  
-An endpoint hosting a PDF file containing persona training material is publicly accessible without any authentication. This exposes potentially sensitive or confidential information to anyone who has or discovers the URL, leading to an information disclosure vulnerability. Lack of access controls violates the principle of least privilege and could result in unauthorized individuals accessing proprietary or private data.
+Steps to Reproduce:
 
-**Steps to Reproduce:**  
-1. Open a web browser.  
-2. Paste the direct URL of the PDF into the address bar.  
-3. Access the document without being prompted for credentials.  
+Log in to the application to establish an authenticated session.
+Locate the JavaScript file containing the API endpoint path: /kioskmode/sessions/${n.kiosk_mode_session_id}/users/deprovision.
+Send a GET request to /kioskmode/sessions (e.g., using a browser or a tool like curl or Postman) to retrieve a JSON response containing a list of sessions.
+Identify a valid kiosk_mode_session_id (a GUID) from the response body (e.g., "kiosk_mode_session_id": "123e4567-e89b-12d3-a456-426614174000").
+Check the initial state by inspecting the JSON response from /kioskmode/sessions, noting that "is_deprovisioned_successfully": false for the targeted session.
+Send a request (e.g., POST or DELETE) to the deprovision endpoint with the substituted GUID:
+Example: POST /kioskmode/sessions/123e4567-e89b-12d3-a456-426614174000/users/deprovision.
+Re-check the /kioskmode/sessions endpoint and observe that "is_deprovisioned_successfully": true for the targeted session, confirming the deprovisioning occurred.
 
-**Remediation:**  
-- Implement proper authentication and authorization controls to restrict access to the PDF.  
-- Store sensitive documents in a secure location and enforce access controls via the server or application layer.  
-- Audit existing endpoints to ensure no other sensitive files are publicly accessible.
-
----  
-
-This format clearly communicates the issue, impact, reproduction steps, and provides actionable remediation steps.
+Enforce Proper Authorization Checks: Ensure the deprovision endpoint (/kioskmode/sessions/{session_id}/users/deprovision) validates that the authenticated user has explicit permission to deprovision the specified session or user. For example, tie the action to a role-based access control (RBAC) system where only administrators or authorized personnel can perform this operation.
