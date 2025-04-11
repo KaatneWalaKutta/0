@@ -1,98 +1,93 @@
-import pandas as pd
 import re
-import os
-import sys
-from difflib import get_close_matches
-
-import pdfplumber
 from docx import Document
 
-def extract_text_from_file(file_path):
-    ext = os.path.splitext(file_path)[-1].lower()
-    full_text = ""
+def extract_text_and_tables_from_docx(docx_path):
+    doc = Document(docx_path)
+    full_text = []
 
-    if ext == ".pdf":
-        import pdfplumber
-        with pdfplumber.open(file_path) as pdf:
-            for page in pdf.pages:
-                full_text += page.extract_text() + "\n"
-                # Extract tables
-                tables = page.extract_tables()
-                for table in tables:
-                    for row in table:
-                        if row and len(row) >= 2:
-                            key, val = row[0], row[1]
-                            full_text += f"{key.strip()} : {val.strip()}\n"
+    # Extract paragraph text
+    for para in doc.paragraphs:
+        if para.text.strip():
+            full_text.append(para.text.strip())
 
-    elif ext == ".docx":
-        from docx import Document
-        doc = Document(file_path)
+    # Extract tables as key-value if 2-column or special case for reviewer table
+    table_data = []
+    for table in doc.tables:
+        for row in table.rows:
+            cells = [cell.text.strip() for cell in row.cells]
+            if len(cells) >= 2:
+                table_data.append(cells)
 
-        # Paragraphs
-        full_text += "\n".join([para.text for para in doc.paragraphs if para.text.strip()]) + "\n"
-
-        # Tables
-        for table in doc.tables:
-            for row in table.rows:
-                cells = row.cells
-                if len(cells) >= 2:
-                    key = cells[0].text.strip()
-                    val = cells[1].text.strip()
-                    full_text += f"{key} : {val}\n"
-
-    else:
-        raise ValueError("Unsupported file format: " + ext)
-
-    return full_text
+    return "\n".join(full_text), table_data
 
 
-def main(doc_path, excel_path="KPITemplate.xlsx"):
-    print("[+] Loading KPI Excel...")
-    df = pd.read_excel(excel_path, sheet_name="Sheet1", skiprows=1)
+def extract_fields(text, table_data):
+    fields = {}
 
-    print(f"[+] Extracting text from: {doc_path}")
-    text = extract_text_from_file(doc_path)
+    # Reviewer name
+    for row in table_data:
+        if len(row) >= 2 and "reviewer" in row[-1].lower():
+            fields["reviewer_name"] = row[0]
+            break
 
-    print("[+] Processing and matching metrics...")
+    # Tools used
+    tools_match = re.search(r"(?:used|leveraged).*?(AppScan.*?Burp Suite.*?)\.", text, re.IGNORECASE)
+    if tools_match:
+        tools_text = tools_match.group(1)
+        tools = re.findall(r'[A-Za-z0-9\-\s]*?(AppScan|Burp Suite|ZAP|Nessus|Nmap|[^,\.]+)', tools_text)
+        fields["tools_used"] = list(set([t.strip() for t in tools if t.strip()]))
 
-    kpi_rules = {
-        "application owner": lambda txt: re.search(r'Point of contact\s*\(App Team\)\s*[:\-]?\s*(.+)', txt, re.IGNORECASE),
-        "user roles": lambda txt: re.search(r'user roles\s+(\d+)', txt, re.IGNORECASE),
-        "testing environment": lambda txt: re.search(r'testing environment\s+(\w+)', txt, re.IGNORECASE),
-        "tools used": lambda txt: re.findall(r'(AppScan|Burp Suite)', txt, re.IGNORECASE),
-        "vulnerabilities": lambda txt: re.search(r'identified.*?(\d+)\s+vulnerabilities.*?(\d+)\s+false', txt, re.IGNORECASE),
+    # Links tested
+    links_match = re.search(r'identified\s+(\d+)\s+links', text, re.IGNORECASE)
+    if links_match:
+        fields["links_tested"] = int(links_match.group(1))
+
+    # Vulnerable links
+    vuln_links = re.search(r'found\s+(\d+)\s+vulnerabilities', text, re.IGNORECASE)
+    if vuln_links:
+        fields["vulnerable_links"] = int(vuln_links.group(1))
+
+    # False positives
+    fp_match = re.search(r'(\d+)\s+vulnerabilities.*?false positives', text, re.IGNORECASE)
+    if fp_match:
+        fields["false_positives"] = int(fp_match.group(1))
+
+    # Total vulnerabilities
+    total_vuln = re.search(r'identified a total of\s+(\d+)\s+vulnerabilities', text, re.IGNORECASE)
+    if total_vuln:
+        fields["total_vulnerabilities"] = int(total_vuln.group(1))
+
+    # Table-driven config values
+    lookup_keys = {
+        "Testing environment": "testing_environment",
+        "No of access levels": "access_levels",
+        "Point of Contact(App team)": "application_owner",
+        "Test URL": "test_url",
+        "User Roles": "user_roles",
+        "Scope of test": "scope_of_test",
+        "Testing Window": "testing_window",
     }
 
-    for idx, row in df.iterrows():
-        metric_text = str(row.iloc[2])
-        if pd.isna(metric_text):
-            continue
+    for row in table_data:
+        if len(row) >= 2:
+            key, val = row[0], row[1]
+            for k in lookup_keys:
+                if key.strip().lower() == k.lower():
+                    fields[lookup_keys[k]] = val.strip()
 
-        best_match = get_close_matches(metric_text.lower(), kpi_rules.keys(), n=1, cutoff=0.4)
-        if not best_match:
-            continue
+    return fields
 
-        key = best_match[0]
-        result = kpi_rules[key](text)
-
-        if result:
-            if isinstance(result, list):
-                comment = ", ".join(set(result))
-            elif isinstance(result, re.Match):
-                comment = " | ".join(g for g in result.groups() if g)
-            else:
-                comment = str(result)
-
-            df.at[idx, "Responses"] = "Completed"
-            df.at[idx, "Additional Comments (If any)"] = comment
-
-    out_file = "KPITemplate_filled.xlsx"
-    df.to_excel(out_file, index=False)
-    print(f"[✓] KPI checklist updated and saved to: {out_file}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python fill_kpi.py <document.pdf/docx>")
-    else:
-        main(sys.argv[1])
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python extract_fields.py <file.docx>")
+        sys.exit(1)
 
+    file_path = sys.argv[1]
+    text, table_data = extract_text_and_tables_from_docx(file_path)
+    extracted = extract_fields(text, table_data)
+
+    print("\n🟢 Extracted Fields:")
+    for k, v in extracted.items():
+        print(f"{k:25}: {v}")
