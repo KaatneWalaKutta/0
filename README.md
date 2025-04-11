@@ -1,3 +1,9 @@
+pandas
+pdfplumber
+python-docx
+openpyxl
+
+
 Unauthorized User Deprovisioning via Insecure API Endpoint
 
 
