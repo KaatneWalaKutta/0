@@ -1,0 +1,31 @@
+Clarification 1: Mark-up Ownership / Authorization
+
+Subject: Clarification on Mark-up Record Authorization
+
+During testing, we observed that users are able to create Mark-up records on the map. We would like to confirm the intended authorization model for this functionality.
+
+Specifically:
+
+Should a user who creates a Mark-up record (User A) be the only user permitted to modify or delete that record?
+Or is it expected that other authorized users (User B) can also modify or delete Mark-up records created by different users?
+If shared modification/deletion is intended, are there any role-based restrictions (e.g., Administrators, Supervisors, Editors) that govern this behavior?
+
+Reason for clarification
+
+This information will help us determine whether the observed behavior is intended business functionality or represents a potential authorization (Broken Access Control/IDOR) issue.
+
+Clarification 2: Unauthenticated File Download
+
+Subject: Clarification on Mark-up Attachment Files
+
+During testing, we observed that files uploaded as part of the Mark-up functionality can be accessed without authentication.
+
+To accurately assess the security impact, could you please clarify:
+
+What types of documents or files are expected to be uploaded through this functionality (e.g., images, engineering drawings, work orders, PDFs, supporting documentation)?
+Do these files contain confidential, internal, or customer-sensitive information?
+Are these uploaded files intended to be publicly accessible, or should access be restricted to authenticated and authorized users?
+
+Reason for clarification
+
+The sensitivity of the uploaded content will help determine whether unauthenticated access represents an acceptable design decision or an information disclosure vulnerability.
