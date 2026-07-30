@@ -1,0 +1,22 @@
+Google Maps API Key Insufficiently Restricted
+
+The application exposes a Google Maps Platform API key within client-side JavaScript. Testing confirmed that the key can be used to successfully invoke multiple billable Google Maps Platform APIs from external requests, indicating that appropriate application and/or API restrictions are not configured.
+
+While Google Maps JavaScript API keys are expected to be visible in client-side code, they should be restricted to authorized HTTP referrers and only the specific Google APIs required by the application. Without these restrictions, unauthorized parties may use the organization's API key outside the intended application.
+
+Impact
+Unauthorized consumption of paid Google Maps APIs.
+Financial charges to the organization's Google Cloud account.
+Exhaustion of API quotas, potentially impacting legitimate users.
+Abuse of enabled APIs from third-party applications.
+
+
+https://maps.google.com/maps/api/js?key=AIzaSy********
+
+
+Remediation
+Restrict the API key to authorized HTTP referrers (e.g., https://app.example.com/*).
+Restrict the key to only the Google Maps APIs required by the application.
+Disable unused Google Maps Platform APIs.
+Rotate the exposed API key after implementing restrictions.
+Configure quotas, budgets, and billing alerts to detect anomalous usage.
