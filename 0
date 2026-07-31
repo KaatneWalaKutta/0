@@ -20,3 +20,15 @@ Restrict the key to only the Google Maps APIs required by the application.
 Disable unused Google Maps Platform APIs.
 Rotate the exposed API key after implementing restrictions.
 Configure quotas, budgets, and billing alerts to detect anomalous usage.
+
+
+
+The GeoHub WFS endpoint /GeoHUBnG/OL4JSFProxy/wfs was found to be accessible without application authentication.
+During testing, requests sent without session cookies, authorization headers, or other authentication credentials successfully returned data from the backend WFS service.
+The endpoint discloses GeoHub Mark-up information including map features and associated metadata without verifying the identity of the requester.
+This could allow an unauthenticated user with network access to enumerate and retrieve information exposed by the endpoint.
+
+Require authentication and authorization before allowing access to the WFS endpoint.
+Ensure all requests are validated against the application's authentication mechanism prior to processing.
+Apply appropriate authorization checks to ensure users can only access resources they are permitted to view.
+Review other WFS/REST endpoints to verify that authentication and authorization are consistently enforced.
