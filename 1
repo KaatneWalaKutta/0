@@ -1,40 +1,13 @@
-Clarification 1: Mark-up Ownership / Authorization
+Draft a professional email to the application/component owners regarding the R6250 release security assessment.
 
-Subject: Clarification on Mark-up Record Authorization
+The email should communicate that:
 
-During testing, we observed that users are able to create Mark-up records on the map. We would like to confirm the intended authorization model for this functionality.
+* DAST testing for the R6250 release has been completed.
+* During the manual penetration testing activity, potential Medium- and Low-severity security issues were identified in the respective application/components.
+* These observations are also documented in the DAST scan report that has already been shared with the concerned owners.
+* The owners are requested to review the identified findings and prioritize remediation, particularly for the Medium-severity issues.
+* If any finding requires clarification or technical discussion, we can arrange a call with the relevant application/component owners to walk through the observations, impact, and recommended remediation.
+* Keep the tone professional, concise, collaborative, and action-oriented. Avoid sounding accusatory or implying that all findings are confirmed vulnerabilities unless explicitly stated.
+* End by requesting acknowledgement/review and asking the owners to share their remediation plan or expected timeline, where applicable.
 
-Specifically:
-
-Should a user who creates a Mark-up record (User A) be the only user permitted to modify or delete that record?
-Or is it expected that other authorized users (User B) can also modify or delete Mark-up records created by different users?
-If shared modification/deletion is intended, are there any role-based restrictions (e.g., Administrators, Supervisors, Editors) that govern this behavior?
-
-Reason for clarification
-
-This information will help us determine whether the observed behavior is intended business functionality or represents a potential authorization (Broken Access Control/IDOR) issue.
-
-Clarification 2: Unauthenticated File Download
-
-Subject: Clarification on Mark-up Attachment Files
-
-During testing, we observed that files uploaded as part of the Mark-up functionality can be accessed without authentication.
-
-To accurately assess the security impact, could you please clarify:
-
-What types of documents or files are expected to be uploaded through this functionality (e.g., images, engineering drawings, work orders, PDFs, supporting documentation)?
-Do these files contain confidential, internal, or customer-sensitive information?
-Are these uploaded files intended to be publicly accessible, or should access be restricted to authenticated and authorized users?
-
-Reason for clarification
-
-The sensitivity of the uploaded content will help determine whether unauthenticated access represents an acceptable design decision or an information disclosure vulnerability.
-
-
-
-
-
-
-Yes, I recognise this activity. The curl.exe command was executed by me as part of the authorised security testing currently being performed on the GeoHub application.
-The request was used to validate whether the WFS endpoint could be accessed without application authentication as part of the security assessment. No activity was performed outside the agreed scope.
-Please let me know if you require any additional information or if there are any concerns regarding the observed activity.
+Generate a polished email with a clear subject, brief context, key action required, and a professional closing.
