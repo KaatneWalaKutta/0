@@ -1,13 +1,90 @@
-Draft a professional email to the application/component owners regarding the R6250 release security assessment.
+$folder = "C:\PATH\TO\YOUR\FOLDER"
+$output = Join-Path $folder "R6250-workspace.xml"
 
-The email should communicate that:
+$projects = @()
 
-* DAST testing for the R6250 release has been completed.
-* During the manual penetration testing activity, potential Medium- and Low-severity security issues were identified in the respective application/components.
-* These observations are also documented in the DAST scan report that has already been shared with the concerned owners.
-* The owners are requested to review the identified findings and prioritize remediation, particularly for the Medium-severity issues.
-* If any finding requires clarification or technical discussion, we can arrange a call with the relevant application/component owners to walk through the observations, impact, and recommended remediation.
-* Keep the tone professional, concise, collaborative, and action-oriented. Avoid sounding accusatory or implying that all findings are confirmed vulnerabilities unless explicitly stated.
-* End by requesting acknowledgement/review and asking the owners to share their remediation plan or expected timeline, where applicable.
+Get-ChildItem -Path $folder -File -Recurse | ForEach-Object {
 
-Generate a polished email with a clear subject, brief context, key action required, and a professional closing.
+    try {
+        $content = Get-Content $_.FullName -Raw -ErrorAction Stop
+
+        # Ignore files that clearly aren't XML
+        if (-not $content.TrimStart().StartsWith("<")) {
+            return
+        }
+
+        [xml]$xml = $content
+
+        $root = $xml.DocumentElement
+
+        # Detect SoapUI project by XML root element,
+        # NOT by filename.
+        if ($root.LocalName -eq "soapui-project") {
+
+            $projectName = $root.GetAttribute("name")
+
+            if ([string]::IsNullOrWhiteSpace($projectName)) {
+                $projectName = $_.BaseName
+            }
+
+            $projects += [PSCustomObject]@{
+                Name = $projectName
+                Path = $_.FullName
+            }
+        }
+    }
+    catch {
+        # Not a valid XML file - ignore it
+    }
+}
+
+Write-Host ""
+Write-Host "========================================"
+Write-Host " SoapUI Project Discovery"
+Write-Host "========================================"
+Write-Host ""
+Write-Host "SoapUI projects found: $($projects.Count)"
+Write-Host ""
+
+$workspace = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-workspace
+    xmlns:con="http://eviware.com/soapui/config"
+    soapui-version="5.8.0"
+    name="R6250">
+
+    <con:description>R6250 SoapUI Workspace</con:description>
+    <con:settings/>
+"@
+
+foreach ($project in $projects) {
+
+    # XML-escape project name
+    $safeName = [System.Security.SecurityElement]::Escape($project.Name)
+
+    # SoapUI workspace examples use forward-slash paths
+    $safePath = $project.Path -replace "\\", "/"
+
+    $workspace += @"
+
+    <con:project name="$safeName">$safePath</con:project>
+"@
+}
+
+$workspace += @"
+
+</con:soapui-workspace>
+"@
+
+Set-Content -Path $output -Value $workspace -Encoding UTF8
+
+Write-Host "Workspace created:"
+Write-Host $output
+Write-Host ""
+
+$projects | Sort-Object Name | ForEach-Object {
+    Write-Host "FOUND: $($_.Name)"
+}
+
+Write-Host ""
+Write-Host "Done."
