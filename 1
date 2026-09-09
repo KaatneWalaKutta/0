@@ -1,90 +1,15 @@
-$folder = "C:\PATH\TO\YOUR\FOLDER"
-$output = Join-Path $folder "R6250-workspace.xml"
+Use Burp MCP to inspect the request currently in my Repeater tab.
 
-$projects = @()
+Do not send the request and do not modify the Repeater tab.
 
-Get-ChildItem -Path $folder -File -Recurse | ForEach-Object {
+Analyze:
+1. HTTP method and endpoint
+2. Authentication mechanism
+3. Session/cookie handling
+4. User-controlled parameters
+5. IDs/object references
+6. Interesting headers
+7. Potential attack surfaces
+8. What security tests you would recommend next
 
-    try {
-        $content = Get-Content $_.FullName -Raw -ErrorAction Stop
-
-        # Ignore files that clearly aren't XML
-        if (-not $content.TrimStart().StartsWith("<")) {
-            return
-        }
-
-        [xml]$xml = $content
-
-        $root = $xml.DocumentElement
-
-        # Detect SoapUI project by XML root element,
-        # NOT by filename.
-        if ($root.LocalName -eq "soapui-project") {
-
-            $projectName = $root.GetAttribute("name")
-
-            if ([string]::IsNullOrWhiteSpace($projectName)) {
-                $projectName = $_.BaseName
-            }
-
-            $projects += [PSCustomObject]@{
-                Name = $projectName
-                Path = $_.FullName
-            }
-        }
-    }
-    catch {
-        # Not a valid XML file - ignore it
-    }
-}
-
-Write-Host ""
-Write-Host "========================================"
-Write-Host " SoapUI Project Discovery"
-Write-Host "========================================"
-Write-Host ""
-Write-Host "SoapUI projects found: $($projects.Count)"
-Write-Host ""
-
-$workspace = @"
-<?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-workspace
-    xmlns:con="http://eviware.com/soapui/config"
-    soapui-version="5.8.0"
-    name="R6250">
-
-    <con:description>R6250 SoapUI Workspace</con:description>
-    <con:settings/>
-"@
-
-foreach ($project in $projects) {
-
-    # XML-escape project name
-    $safeName = [System.Security.SecurityElement]::Escape($project.Name)
-
-    # SoapUI workspace examples use forward-slash paths
-    $safePath = $project.Path -replace "\\", "/"
-
-    $workspace += @"
-
-    <con:project name="$safeName">$safePath</con:project>
-"@
-}
-
-$workspace += @"
-
-</con:soapui-workspace>
-"@
-
-Set-Content -Path $output -Value $workspace -Encoding UTF8
-
-Write-Host "Workspace created:"
-Write-Host $output
-Write-Host ""
-
-$projects | Sort-Object Name | ForEach-Object {
-    Write-Host "FOUND: $($_.Name)"
-}
-
-Write-Host ""
-Write-Host "Done."
+For every proposed test, explain what vulnerability it is testing and what evidence would confirm or reject it.
