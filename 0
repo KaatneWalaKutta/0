@@ -1,1 +1,547 @@
 
+Create a **professional Web Application Vulnerability Assessment Report** as a Microsoft Word document (.docx). The document should be suitable for delivery to a client, management, security team, development team, or application owner.
+
+The report should have a professional cybersecurity consulting/reporting style: clear, objective, evidence-based, technically accurate, and concise. Do not exaggerate vulnerabilities or make unsupported claims. Clearly distinguish between confirmed findings, observations, limitations, and recommendations.
+
+## 1. Document Structure
+
+Organize the report in the following order:
+
+### Cover Page
+
+Include:
+
+* Client / Organization Name
+* Application / Project Name
+* Assessment Type: Web Application Vulnerability Assessment
+* Assessment Period
+* Report Date
+* Report Version
+* Prepared By
+* Confidentiality Classification
+* Document status
+
+### Document Control
+
+Include a table containing:
+
+* Version
+* Date
+* Author
+* Reviewer
+* Approver
+* Description of Changes
+
+### Table of Contents
+
+Generate a proper Word Table of Contents using heading styles so that it can be updated automatically.
+
+### 2. Assessment Overview
+
+Explain:
+
+* Purpose of the assessment
+* Assessment objectives
+* Assessment methodology
+* Assessment approach
+* Manual testing activities
+* Automated testing activities
+* Tools used
+* Testing perspective / assumed attacker position
+* Authentication requirements
+* Testing limitations
+* Assessment constraints
+* Any assumptions made
+
+Clearly distinguish **manual validation** from **automated scanning**.
+
+Include a methodology subsection covering, where applicable:
+
+* Reconnaissance
+* Application mapping
+* Authentication and session management
+* Authorization / access control
+* Input validation
+* Injection testing
+* Client-side security
+* API testing
+* File handling
+* Business logic
+* Security configuration
+* Cryptography / TLS
+* Error handling
+* Information disclosure
+* OWASP Top 10 coverage
+
+### 3. Scope
+
+Clearly document the assessment scope.
+
+Include:
+
+* In-scope applications
+* In-scope domains / subdomains
+* IP addresses, if applicable
+* APIs / endpoints
+* Application functionality tested
+* User roles / privilege levels tested
+* Out-of-scope assets
+* Out-of-scope testing activities
+* Testing environment
+* Assessment dates
+
+Use tables where appropriate.
+
+### 4. Executive Summary
+
+Write a management-level summary that does not require deep technical knowledge.
+
+Include:
+
+* Overall security posture
+* Number of findings
+* Severity distribution
+* Most significant risks
+* Key business impacts
+* Major positive observations, if relevant
+* Overall conclusion
+* Priority recommendations
+
+Do not simply repeat the technical findings.
+
+### 5. Vulnerability Summary & Report Card
+
+Create a visual summary of the assessment.
+
+Include:
+
+* Total findings
+* Critical
+* High
+* Medium
+* Low
+* Informational
+
+Create a severity distribution table and, where appropriate, a simple chart.
+
+Also provide an overall security "report card" using clearly defined criteria rather than an arbitrary grade.
+
+Example:
+
+| Category               | Rating | Observation |
+| ---------------------- | ------ | ----------- |
+| Authentication         |        |             |
+| Authorization          |        |             |
+| Input Validation       |        |             |
+| Session Management     |        |             |
+| API Security           |        |             |
+| Configuration          |        |             |
+| Information Disclosure |        |             |
+| Client-Side Security   |        |             |
+
+Clearly explain the rating methodology.
+
+### 6. Finding Severity Ratings
+
+Define the severity methodology used in the report.
+
+Use:
+
+* Critical
+* High
+* Medium
+* Low
+* Informational
+
+Explain what each severity means in terms of:
+
+* Exploitability
+* Impact
+* Likelihood
+* Business consequence
+
+Where CVSS is used, use **CVSS v3.1 or CVSS v4.0 consistently throughout the report** and explicitly state which version is being used.
+
+Do not invent CVSS scores. Calculate or validate the score from the selected vector.
+
+### 7. Risk Factors
+
+Explain the factors used to determine risk.
+
+Consider:
+
+* Confidentiality impact
+* Integrity impact
+* Availability impact
+* Attack complexity
+* Attack vector
+* Privileges required
+* User interaction
+* Exploitability
+* Authentication requirements
+* Business criticality
+* Exposure
+* Likelihood
+* Presence of compensating controls
+
+Clearly distinguish **technical severity** from **business risk** where appropriate.
+
+### 8. Vulnerability Summary Table
+
+Create a master findings table with at least:
+
+| Finding ID | Finding Title | Severity | CVSS Score | CWE | Affected Endpoint / Component | Status |
+| ---------- | ------------- | -------- | ---------- | --- | ----------------------------- | ------ |
+
+Use consistent Finding IDs such as:
+
+* WEB-001
+* WEB-002
+* WEB-003
+
+### 9. Technical Findings
+
+Create a separate detailed section for every vulnerability.
+
+Every finding should use the following structure:
+
+#### Finding ID and Title
+
+Example:
+**WEB-001 – Broken Access Control**
+
+#### Severity
+
+* Severity: High
+* CVSS Version: CVSS v3.1 / v4.0
+* CVSS Score:
+* CVSS Vector String:
+
+#### CWE
+
+* CWE ID
+* CWE Name
+* Link/reference where appropriate
+
+#### Affected Asset / Endpoint
+
+Include:
+
+* Protocol
+* Host
+* HTTP method
+* Endpoint / URL path
+* Parameter(s)
+* Request type
+* Affected functionality
+* Affected user role
+* Environment
+
+Do not unnecessarily expose sensitive credentials, tokens, session cookies, or personal information in the report.
+
+#### Description
+
+Explain:
+
+* What the vulnerability is
+* Where it occurs
+* How it was identified
+* Why the behavior is considered insecure
+
+The description should be understandable to both technical and security stakeholders.
+
+#### Risk / Impact
+
+Explain the actual consequences of successful exploitation.
+
+Where applicable, address:
+
+* Confidentiality impact
+* Integrity impact
+* Availability impact
+* Authentication impact
+* Authorization impact
+* Data exposure
+* Account compromise
+* Privilege escalation
+* Business impact
+
+Avoid generic statements such as "an attacker could compromise the system" unless supported by the evidence.
+
+#### Preconditions
+
+Document anything required to exploit the vulnerability, such as:
+
+* Authentication
+* Specific user role
+* Network access
+* Knowledge of an identifier
+* Specific application state
+* User interaction
+
+#### Steps to Reproduce
+
+Provide clear, deterministic reproduction steps.
+
+Include:
+
+1. Preconditions
+2. Authentication requirements
+3. Navigation / request sequence
+4. HTTP requests where useful
+5. Parameters
+6. Payloads, where appropriate
+7. Observed response
+8. Expected secure behavior
+9. Actual behavior
+
+Use sanitized request/response examples where appropriate.
+
+Do not include secrets, production credentials, session tokens, or unnecessary personal information.
+
+#### Evidence
+
+Provide placeholders for:
+
+* Screenshot 1 – Initial request / application state
+* Screenshot 2 – Exploitation / modified request
+* Screenshot 3 – Result / impact
+* Screenshot 4 – Additional evidence, if required
+
+Each screenshot should have a caption and figure number.
+
+Use clearly visible placeholders such as:
+
+[SCREENSHOT PLACEHOLDER – Insert evidence showing unauthorized access]
+
+#### Proof of Concept
+
+Where applicable, include:
+
+* Sanitized HTTP request
+* Sanitized HTTP response
+* Relevant code snippet
+* Payload
+* Command
+* Burp Suite evidence
+* API response
+
+Keep the PoC minimal and reproducible.
+
+#### Expected Behavior
+
+Describe what the application should do from a security perspective.
+
+#### Actual Behavior
+
+Describe what the application actually does.
+
+#### Remediation
+
+Provide specific and actionable remediation guidance.
+
+Remediation should:
+
+* Address the root cause
+* Explain the recommended implementation
+* Avoid vague recommendations such as "improve security"
+* Identify relevant application/security controls
+* Mention server-side enforcement where applicable
+* Explain validation requirements
+* Explain authorization requirements where applicable
+
+Where appropriate, separate:
+
+**Immediate Mitigation**
+and
+**Long-Term Remediation**
+
+#### Remediation Verification
+
+Provide guidance for how the development/security team can verify that the vulnerability has been fixed.
+
+Include:
+
+* Expected secure behavior
+* Test conditions
+* Regression testing requirements
+* Relevant security control to verify
+
+#### References
+
+Include relevant authoritative references, such as:
+
+* OWASP
+* CWE
+* NIST
+* MITRE
+* CVSS documentation
+* Vendor documentation
+
+Do not include irrelevant references.
+
+#### Finding Status
+
+Include:
+
+* Open
+* Remediated
+* Accepted Risk
+* False Positive
+* Informational
+* Not Applicable
+
+Where applicable, include:
+
+* Remediation date
+* Retest date
+* Retest result
+* Evidence of closure
+
+### 10. Positive Security Observations
+
+Include a short section documenting significant security controls that were observed to be implemented correctly.
+
+Examples:
+
+* Secure cookie attributes
+* Strong authentication controls
+* Proper authorization enforcement
+* Security headers
+* Input validation
+* Rate limiting
+* TLS configuration
+
+Do not include this section merely to make the report look positive; only include meaningful observations supported by testing.
+
+### 11. Recommendations & Prioritization
+
+Provide a prioritized remediation roadmap.
+
+Group recommendations into:
+
+**Immediate / Critical Priority**
+
+* Critical and High severity issues
+
+**Short-Term**
+
+* Medium severity issues
+
+**Long-Term / Hardening**
+
+* Low and Informational issues
+* Security improvements
+
+Where useful, include:
+
+* Finding ID
+* Recommended action
+* Priority
+* Suggested owner
+* Suggested remediation timeline
+
+Do not invent remediation deadlines unless explicitly provided.
+
+### 12. Retest / Validation Section
+
+Include a section that can be completed after remediation.
+
+For each retested finding include:
+
+| Finding ID | Original Severity | Retest Date | Result | Evidence | Notes |
+| ---------- | ----------------- | ----------- | ------ | -------- | ----- |
+
+Possible results:
+
+* Fixed
+* Partially Fixed
+* Not Fixed
+* Unable to Verify
+
+### 13. Assessment Limitations
+
+Document limitations such as:
+
+* Time constraints
+* Restricted functionality
+* Unavailable user roles
+* Unavailable source code
+* Test environment differences
+* Rate limiting
+* WAF/CDN interference
+* Out-of-scope functionality
+* Unavailable production access
+
+Clearly state that the assessment represents the security posture observed within the defined scope and testing period and does not guarantee the absence of vulnerabilities.
+
+### 14. Appendix
+
+Include, where applicable:
+
+* Tools used
+* Testing methodology
+* CWE reference list
+* CVSS methodology
+* HTTP status code observations
+* Security headers
+* Endpoint inventory
+* Glossary
+* Acronyms
+* Additional evidence
+
+## Formatting Requirements
+
+Create the document with professional cybersecurity consulting formatting.
+
+Use:
+
+* Consistent heading hierarchy
+* Numbered sections
+* Page numbers
+* Header and footer
+* Confidentiality classification in the footer
+* Professional tables
+* Consistent typography
+* Figure numbering
+* Table numbering
+* Adequate spacing
+* Clear severity indicators
+* Landscape orientation for wide tables where necessary
+* Automatic Table of Contents
+* Automatic heading numbering where possible
+
+Do not overcrowd pages.
+
+Technical request/response examples should use a monospace font and visually distinct formatting.
+
+Screenshots should have standardized placeholders with captions.
+
+## Report Quality Requirements
+
+The report must be:
+
+1. Evidence-based
+2. Reproducible
+3. Developer-actionable
+4. Management-readable
+5. Consistent in severity classification
+6. Consistent in CVSS methodology
+7. Free from unsupported claims
+8. Free from secrets and unnecessary sensitive information
+9. Suitable for client delivery
+10. Structured so that individual findings can be independently understood
+
+For every vulnerability, ensure the reader can answer:
+
+**What is wrong?
+Where is it wrong?
+Why does it matter?
+How can I reproduce it?
+What evidence proves it?
+What is the impact?
+How severe is it?
+How do I fix it?
+How do I verify the fix?**
+
+Finally, create the Word document with realistic placeholder content where assessment-specific information is unavailable. Clearly mark placeholders such as `[CLIENT NAME]`, `[ASSESSMENT DATE]`, `[ENDPOINT]`, and `[INSERT SCREENSHOT]` rather than inventing assessment results.
